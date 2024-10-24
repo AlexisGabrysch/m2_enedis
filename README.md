@@ -1,5 +1,5 @@
 # m2_enedis
 
-Alexis GABRYSCH
-Lucile PERBET
-Joël SOLLARI
+Alexis GABRYSCH  
+Lucile PERBET  
+Joël SOLLARI  
