@@ -2,4 +2,4 @@
 
 Alexis GABRYSCH
 Lucile PERBET
-Joël 
+Joël SOLLARI
