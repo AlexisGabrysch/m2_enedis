@@ -4,6 +4,7 @@ from dash import dcc, html
 from dash.dependencies import Input, Output
 import pandas as pd
 import plotly.express as px
+import os
 
 class DashApp():
     def __init__(self, DataFrame):
@@ -50,4 +51,5 @@ class DashApp():
         ])
 
     def run(self):
-        self.app.run_server(debug=True)
+        port = int(os.environ.get('PORT', 8050))
+        self.app.run_server(debug=False, host='0.0.0.0', port=port)
