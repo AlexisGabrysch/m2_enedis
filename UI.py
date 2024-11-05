@@ -9,9 +9,13 @@ import os
 class DashApp():
     def __init__(self, DataFrame):
         # Initialize the API and get the dataframe
-        self.df = DataFrame
+     
         # Initialize the Dash app
         self.app = dash.Dash(__name__)
+        self.app.title = 'ENEDIS'
+        self.server = self.app.server
+
+        self.df = DataFrame
         self.setup_layout()
 
     def setup_layout(self):
