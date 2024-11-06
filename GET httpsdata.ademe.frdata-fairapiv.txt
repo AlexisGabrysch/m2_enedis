@@ -1,0 +1,53 @@
+GET https://data.ademe.fr/data-fair/api/v1/datasets/dpe-v2-logements-existants/lines?select=Etiquette_DPE%2CAnn%C3%A9e_construction%2CType_b%C3%A2timent%2CType_installation_chauffage%2CType_installation_ECS_(g%C3%A9n%C3%A9ral)    
+
+
+
+GET https://data.ademe.fr/data-fair/api/v1/datasets/dpe-v2-logements-existants/lines?select=P%C3%A9riode_construction%2CHauteur_sous-plafond%2CNombre_appartement%2CNombre_niveau_logement%2CSurface_habitable_immeuble    
+
+GET https://data.ademe.fr/data-fair/api/v1/datasets/dpe-v2-logements-existants/lines?select=Surface_habitable_logement%2CClasse_inertie_b%C3%A2timent%2CNom__commune_(BAN)    
+
+GET https://data.ademe.fr/data-fair/api/v1/datasets/dpe-v2-logements-existants/lines?select=Code_INSEE_(BAN)%2CCode_postal_(BAN)%2CCoordonn%C3%A9e_cartographique_X_(BAN)%2CCoordonn%C3%A9e_cartographique_Y_(BAN)    
+
+GET https://data.ademe.fr/data-fair/api/v1/datasets/dpe-v2-logements-existants/lines?select=N%C2%B0_%C3%A9tage_appartement%2CN%C2%B0_d%C3%A9partement_(BAN)%2CN%C2%B0_r%C3%A9gion_(BAN)%2CConso_5_usages_%C3%A9_finale%2CConso_5_usages%2Fm%C2%B2_%C3%A9_finale    
+
+GET https://data.ademe.fr/data-fair/api/v1/datasets/dpe-v2-logements-existants/lines?select=Conso_chauffage_%C3%A9_finale%2CConso_%C3%A9clairage_%C3%A9_finale%2CConso_ECS_%C3%A9_finale%2CConso_refroidissement_%C3%A9_finale    
+
+GET https://data.ademe.fr/data-fair/api/v1/datasets/dpe-v2-logements-existants/lines?select=Conso_chauffage_%C3%A9_finale%2CConso_auxiliaires_%C3%A9_finale%2CConso_5_usages_%C3%A9_primaire    
+
+GET https://data.ademe.fr/data-fair/api/v1/datasets/dpe-v2-logements-existants/lines?select=Co%C3%BBt_total_5_usages%2CCo%C3%BBt_chauffage%2CCo%C3%BBt_chauffage_d%C3%A9pensier    
+
+GET https://data.ademe.fr/data-fair/api/v1/datasets/dpe-v2-logements-existants/lines?select=Co%C3%BBt_%C3%A9clairage%2CCo%C3%BBt_ECS%2CCo%C3%BBt_ECS_d%C3%A9pensier%2CCo%C3%BBt_refroidissement%2CCo%C3%BBt_refroidissement_d%C3%A9pensier%2CCo%C3%BBt_auxiliaires    
+
+GET https://data.ademe.fr/data-fair/api/v1/datasets/dpe-v2-logements-existants/lines?select=Indicateur_confort_%C3%A9t%C3%A9%2CIsolation_toiture_(0%2F1)%2CProtection_solaire_exterieure_(0%2F1)%2CInertie_lourde_(0%2F1)    
+
+
+GET https://data.ademe.fr/data-fair/api/v1/datasets/dpe-v2-logements-existants/lines?select=Deperditions_baies_vitr%C3%A9es%2CDeperditions_enveloppe%2CD%C3%A9perditions_murs%2CDeperditions_planchers_bas%2CDeperditions_planchers_hauts    
+
+GET https://data.ademe.fr/data-fair/api/v1/datasets/dpe-v2-logements-existants/lines?select=D%C3%A9perditions_ponts_thermiques%2CD%C3%A9perditions_portes%2CD%C3%A9perditions_renouvellement_air%2CQualit%C3%A9_isolation_enveloppe    
+
+GET https://data.ademe.fr/data-fair/api/v1/datasets/dpe-v2-logements-existants/lines?select=Qualit%C3%A9_isolation_menuiseries%2CQualit%C3%A9_isolation_murs%2CQualit%C3%A9_isolation_plancher_bas    
+
+
+GET https://data.ademe.fr/data-fair/api/v1/datasets/dpe-v2-logements-existants/lines?select=Qualit%C3%A9_isolation_plancher_haut_comble_am%C3%A9nag%C3%A9%2CQualit%C3%A9_isolation_plancher_haut_comble_perdu    
+
+GET https://data.ademe.fr/data-fair/api/v1/datasets/dpe-v2-logements-existants/lines?select=Type_%C3%A9nergie_principale_chauffage%2CType_%C3%A9nergie_principale_ECS%2CType_%C3%A9nergie_climatisation    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
