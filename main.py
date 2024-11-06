@@ -1,6 +1,6 @@
 from UI import DashApp
 from api import API
-def start():
+def main():
     """
     Initializes and starts the Dash application.
     This function creates an instance of the DashApp class and runs the application.
@@ -13,4 +13,4 @@ def start():
 
 
 if __name__ == "__main__":
-    start()
+    main()
