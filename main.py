@@ -1,14 +1,13 @@
 from UI import DashApp
 from api import API
 
-api = API(query="09")
-api.fetch_data()
-df = api.df
-app_instance = DashApp(df)
-
-# Expose the server attribute
-server = app_instance.server
+def start_app():
+    api = API(query="09")
+    api.fetch_data()
+    df = api.df
+    app_instance = DashApp(df)
+    app_instance.run()
 
 
 if __name__ == "__main__":
-    app_instance.app.run_server(debug=False)
+    start_app()
