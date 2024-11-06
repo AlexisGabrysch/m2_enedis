@@ -6,7 +6,7 @@ import pandas as pd
 import plotly.express as px
 import os
 
-class DashApp():
+class DashApp:
     def __init__(self, DataFrame):
         # Initialize the API and get the dataframe
      

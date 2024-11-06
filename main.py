@@ -8,8 +8,8 @@ def main():
     api = API(query="09")
     api.fetch_data()
     df = api.df
-    app = DashApp(df)
-    app.run()
+    interface = DashApp(df)
+    interface.run()
 
 
 if __name__ == "__main__":
