@@ -1,30 +1,41 @@
-# m2_enedis
+# M2_enedis
 
-## Project Overview
+## Auteurs
 
-This project, `m2_enedis`, is developed by:
+Le projet, `m2_enedis`, a été développé par:
 
 - Alexis GABRYSCH
-- Lucile PERBET
 - Joël SOLLARI
+- Lucile PERBET
 
 ## Description
 
-Provide a brief description of the project here. Explain the main objectives and functionalities.
+Cette application s'inscrit dans le cadre d'un défi lancé par Enedis qui a pour but de prédire du Diagnostic de Performance Energétique (DPE) et la consommation énergétique des logements du Rhône en se basant sur les données récoltées via l'api de l'[ADEME]( https://data.ademe.fr/datasets/dpe-v2-logements-existants/api-doc). 
+
+## Fonctionnalité de l'application
+- Visualisation de plusieurs KPIs
+- Analyse des DPE et de la consommation énergétique
+- Prédiction DPE et Consommation énergétique
+- Rafraîchissement des données via l'API
 
 ## Installation
-
-Describe the steps required to install and set up the project. For example:
+1. Récupération du répertoire
 
 ```bash
-git clone https://github.com/yourusername/m2_enedis.git
+git clone https://github.com/AlexisGabrysch/m2_enedis.git
 cd m2_enedis
-pip install -r requirements.txt
 ```
 
-## Usage
+2. Installations des librairies nécessaires
+```bash
+pip install -r requirements.txt
+```
+## Strcuture du code
+Lister les différentes fichiers et expliquer rapidement ce qu'ils font
 
-Provide examples and instructions on how to use the project. For example:
+## Utilisation
+
+Pour lancer l'application :
 
 ```bash
 python main.py
