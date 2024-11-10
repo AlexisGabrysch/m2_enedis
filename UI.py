@@ -23,11 +23,9 @@ class DashApp:
         self.app.title = 'ENEDIS'
         self.server = self.app.server
         
-        self.model = Model()
+        self.new_data = None    
+        self.nl = 0
         self.df = API().get_data()
-        self.fig = None  
-        self.fig_dict = {}
-        self.new_data = None
         self.setup_layout()
         self.setup_callbacks()
         self.convert_coordinates()
@@ -812,13 +810,14 @@ class DashApp:
                 categorical_columns = ['Type_bâtiment', 'Période_construction', 'Qualité_isolation_plancher_bas', 'Type_isolation_plancher_haut', 'Type_énergie_principale_chauffage', 'Type_énergie_principale_ECS', 'Climatisation']
 
                 # Make a prediction using the model
-                predictions_conso, predictions_etiquette = self.model.prediction(input_data, categorical_columns)
+                model = Model()
+                predictions_conso, predictions_etiquette = model.prediction(input_data, categorical_columns)
 
                 # Display the prediction result
                 return html.Div([
-                    html.H4('Prediction Result:'),
-                    html.P(f'The predicted energy consumption is: {predictions_conso[0]}'),
-                    html.P(f'The predicted DPE label is: {predictions_etiquette[0]}')
+                    html.H4('Résultat de la prédiction'),
+                    html.P(f'La prédiction de la consommation est: {predictions_conso[0]} kWh/an'),
+                    html.P(f'L\'étiquette DPE prédite est: {predictions_etiquette[0]}')
                 ])
             return ''
 
@@ -838,22 +837,29 @@ class DashApp:
 
                     # Fetch and save data
                     api = API()
-                    df, self.new_data = api.refresher()
+                    df, nl = api.refresher()
+                    self.nl += nl
                     if df is not None:
+                        print(df)
                         self.df = df
-                    
+                        
                         # Extract the latest date_reception_dpe
                         if 'Date_réception_DPE' in self.df.columns:
                             latest_date = self.df['Date_réception_DPE'].dropna().sort_values(ascending=False).iloc[0]
                             latest_date_str = f'Dernier rafraîchissement : {latest_date}'
-                        else:
-                            latest_date_str = 'Dernier rafraîchissement : inconnu'
+                            self.new_data = True
+                    else:
+                        latest_date = self.df['Date_réception_DPE'].dropna().sort_values(ascending=False).iloc[0]
+                        latest_date_str = f'Dernier rafraîchissement : {latest_date}'
+                        self.new_data = None
 
-                        # Update status and button label after processing
-                        status_message = 'Données rafraîchies'
-                        button_label = 'Rafraîchi'
-                        disabled = False
-                        return status_message, button_label, disabled, latest_date_str
+                    # Update status and button label after processing
+                    status_message = f'Données rafraîchies . Nombres de lignes ajoutées : {nl}'
+                    button_label = 'Rafraîchi'
+                    disabled = False
+                    return status_message, button_label, disabled, latest_date_str
+                    
+            
                 except Exception as e:
                     # Handle potential errors
                     status_message = f'Erreur : {str(e)}'
@@ -1133,13 +1139,14 @@ class DashApp:
                     # Disable the button during processing
                     disabled = True
                     status_message = 'En cours de traitement...'
-                    if self.new_data is None:
+                    if self.nl == 0:
                         status_message = 'Erreur : aucune nouvelle donnée à traiter'
                         button_label = 'Réentraîner'
                         disabled = False
                         return status_message, button_label, disabled
                     # Réentrainement du modèle
-                    self.model.fine_tuning(self.new_data)
+                    model = Model()
+                    model.fine_tuning(self.df)
                     
                     # Update status and button label after processing
                     status_message = 'Modèle réentrainé'

@@ -49,7 +49,7 @@ class API:
 
         if new_data.empty:
             print("No new data")
-            return
+            return None, 0
         else:
             print("Fetching data")
             print(len(new_data))
@@ -78,7 +78,8 @@ class API:
             new_data = new_data.drop(columns=["_score"])
             self.df = pd.concat([self.df, new_data], ignore_index=True, axis=0)
             self.df.to_csv("assets/enedis_69.csv", index=False , encoding="utf-8")
-        return self.df , new_data
+            nl = len(new_data)
+        return self.df , nl
 
     def processing_data(self):
         # Drop columns that are not needed
