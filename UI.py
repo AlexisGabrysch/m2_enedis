@@ -367,10 +367,12 @@ class DashApp:
     
 
         fig = px.scatter_mapbox(
-            self.df.sample(10000),
+
+            self.df.sample(60000),
             lat="Coordonnée_cartographique_Y_(BAN)",
             lon="Coordonnée_cartographique_X_(BAN)",
             color="Etiquette_DPE",
+            size_max=10,
             color_discrete_map={
                 'A': '#479E72',
                 'B': '#6BAE5E',
@@ -390,12 +392,14 @@ class DashApp:
                 "Coordonnée_cartographique_X_(BAN)": False,
                 "Coordonnée_cartographique_Y_(BAN)": False
             },
-            zoom=7,
+            zoom=10,
         )
-
+       
         fig.update_layout(
-            mapbox_style="open-street-map",
-            mapbox_zoom=8,
+            mapbox_style="carto-positron",
+            mapbox_zoom=10,
+            mapbox_center={"lat": 45.75, "lon": 4.85},
+            mapbox_bounds={"west": -5, "east": 9, "south": 41, "north": 51},  # Limites de la France métropolitaine
             margin={"r": 0, "l": 0, "b": 0},
             legend=dict(
                 orientation="h",
@@ -955,14 +959,13 @@ class DashApp:
             Output('graphs-store', 'data'),
             Input('add-graph-button', 'n_clicks'),
             Input({'type': 'remove-button', 'index': ALL}, 'n_clicks'),
-            Input({'type': 'download-button-graph', 'index': ALL}, 'n_clicks'),
             State('dropdown-x', 'value'),
             State('dropdown-y', 'value'),
             State('dropdown-color', 'value'),
             State('dropdown-chart-type', 'value'),
             State('graphs-store', 'data')
         )
-        def update_graphs_store(add_clicks, remove_clicks,dnwl_button, x_var, y_var, color_var, chart_type, graphs_data):
+        def update_graphs_store(add_clicks, remove_clicks, x_var, y_var, color_var, chart_type, graphs_data):
             ctx = dash.callback_context
 
             # Check if the add button was clicked
@@ -1022,22 +1025,6 @@ class DashApp:
                 # Filter out the graph with the matching ID
                 graphs_data = [graph for graph in graphs_data if graph['id'] != graph_id_to_remove]
             
-            elif ctx.triggered and 'download-button-graph' in ctx.triggered[0]['prop_id']:
-                button_id = ctx.triggered[0]['prop_id'].split('.')[0]
-                button_id = ctx.triggered[0]['prop_id'].split('.')[0]
-                button_id_dict = eval(button_id)
-                graph_id = button_id_dict['index']
-                
-                # Trouver la figure correspondante
-                fig_dict = next((graph for graph in graphs_data if graph['id'] == graph_id), None)
-                if fig_dict:
-                    # Convertir la figure en image bytes
-                    fig = go.Figure(fig_dict['figure'])
-                    buffer = io.BytesIO()
-                    fig.write_image(buffer, format="png")
-                    buffer.seek(0)
-                    dcc.send_file(buffer.read(), filename=f"graph_{graph_id}.png")
-        
             
 
 
@@ -1056,7 +1043,7 @@ class DashApp:
                 [
                 dcc.Graph(figure=fig_dict['figure'], id=fig_dict['id'], style={'width': '100%', 'height': '300px'}, responsive=True),
                 html.Button("Remove", id={'type': 'remove-button', 'index': fig_dict['id']}, n_clicks=0),
-                html.Button("Donwload", id={'type': 'download-button-graph', 'index': fig_dict['id']}, n_clicks=0),
+                html.Button("Download", id={'type': 'download-button-graph', 'index': fig_dict['id']}, n_clicks=0),
                 dcc.Download(id={'type': 'download-dataframe-png-graph', 'index': fig_dict['id']})
                 ], style={
                 'display': 'flex',
@@ -1070,6 +1057,39 @@ class DashApp:
             ) for fig_dict in graphs_data
             ]
 
+        @self.app.callback(
+            Output({'type': 'download-dataframe-png-graph', 'index': ALL}, 'data'),
+            Input({'type': 'download-button-graph', 'index': ALL}, 'n_clicks'),
+            State('graphs-store', 'data'),
+            prevent_initial_call=True
+        )
+        def download_graph(n_clicks, graphs_data):
+           
+            ctx = dash.callback_context
+            if n_clicks:
+                # Extract graph id from the triggered download button
+                if ctx.triggered and 'download-button-graph' in ctx.triggered[0]['prop_id']:
+             
+                    # Extract graph id from the triggered download button
+                    button_id_dict = eval(ctx.triggered[0]['prop_id'].split('.')[0])
+                    graph_id = button_id_dict['index']
+                   
+                 
+                    
+                    # Find the graph with the matching id
+                    fig_dict = next((graph for graph in graphs_data if graph['id'] == graph_id), None)
+                    if fig_dict:
+                    
+                        # Convert the figure to an image in bytes
+                        fig = go.Figure(fig_dict["figure"])
+                        image_bytes = io.BytesIO()
+                        fig.write_image(image_bytes, format="png")
+                        image_bytes.seek(0)
+                        # Use dcc.send_bytes to send the image as a downloadable file
+                        return [dcc.send_bytes(lambda: image_bytes.read(), filename=f"graph_{graph_id}.png")]
+
+                # If no download is triggered, return an empty list (to match ALL output)
+                return [None] * len(n_clicks)
 
 
         
