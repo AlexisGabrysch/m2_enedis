@@ -30,9 +30,9 @@ Nous sommes parties sur Random Forest Regressor pour obtenir des bonnes performa
 
 ## Structure de l'application
 - **Contexte** : Cette page vous présente les objectifs de l'application. Il est possible de rafraîchir les données via l'API.
-- **Stats** : Dans cet onglet, on visualise les données sous forme de tableau avec la possibilité de le télécharger en CSV. Vous avez aussi une vue sur les différents KPI implémentés.
-- **Graphs** : Il est possible de créer ses propres graphiques pour analyser et comprendre les enjeux de la consommation énergétique. Une carte du Rhône est disponible pour visualiser la répartition des étiquettes DPE à travers le département.
-- **Prédiction** : En saisissant les informations demandées, vous obtiendrez la prédiction de votre logement.
+- **Statistiques** : Dans cet onglet, on visualise les données sous forme de tableau avec la possibilité de le télécharger en CSV. Vous avez aussi une vue sur les différents KPI implémentés.
+- **Visualisations** : Il est possible de créer ses propres graphiques pour analyser et comprendre les enjeux de la consommation énergétique. Une carte du Rhône est disponible pour visualiser la répartition des étiquettes DPE à travers le département.
+- **Prédictions** : En saisissant les informations demandées, vous obtiendrez la prédiction de votre logement.
 
 ## Strcuture du code
 Le code s'organise autour de 4 fichiers : 
