@@ -66,6 +66,6 @@ python main.py
 - Ensuite, allez à l'adresse suivant : 
 http://127.0.0.1:8050/
 
-Si vous préférez la version en ligne.
+Si vous préférez la version en ligne
 - Suivez ce lien : https://m2-enedis-fw9e.onrender.com/
 
