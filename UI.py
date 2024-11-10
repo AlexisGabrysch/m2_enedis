@@ -260,10 +260,6 @@ class DashApp:
                 ]
             )
         
-
-                            
-
-
     def render_graph(self):
 
         return html.Div([
@@ -279,11 +275,6 @@ class DashApp:
                 html.Div(id='graph-content')
                 ])
     
-                            
-     
-       
-
-
 
     def render_contexte(self):
         return html.Div(children=[
@@ -353,7 +344,7 @@ class DashApp:
                                             className='box',
                                             children=[
                                                 html.H2("Rafraîchissement des données"),
-                                                html.P("Cliquez sur le bouton ci-dessous pour rafraîchir les données. Cette opération peut prendre quelques minutes. De plus, les données de l'API sont mises à jour tout les mois seulement."),
+                                                html.P("Cliquez sur le bouton ci-dessous pour rafraîchir les données. Cette opération peut prendre quelques minutes. De plus, les données de l'API sont mises à jour tous les mois seulement."),
                                                 html.Div([
                                                     html.Div(id='last-refresh-date', style={'margin-bottom': '10px', 'fontWeight': 'bold'}),
                                                     html.Button('Rafraîchir', id='refresh-button', n_clicks=0),
@@ -387,16 +378,8 @@ class DashApp:
                                             ]
                                         ),
                                                 
-                                    ]   
-                                        )
-                                    
-                                    ]
-                                
-
-                                )
-                            
-                        
-                        
+                                    ])])
+                                   
     
     def render_cartographie(self):
     
@@ -1151,6 +1134,7 @@ class DashApp:
                     # Réentrainement du modèle
                     model = Model()
                     model.fine_tuning(self.df)
+                    self.convert_coordinates()
                     
                     # Update status and button label after processing
                     status_message = 'Modèle réentrainé'

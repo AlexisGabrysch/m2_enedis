@@ -50,7 +50,7 @@
 #navigation-menu a {
     display: block;
     margin: 10px 0;
-    color: #283635; /* Updated color */
+    color: #283635; 
     text-decoration: none;
     font-weight: bold;
 }
@@ -327,9 +327,6 @@ h1, h2, h3, h4, h5, h6 {
     /* Update label color for active subtabs */
     color: #2A3663; /* Blue text */
 }
-
-
-
 
 
 
