@@ -47,103 +47,8 @@ class DashApp:
                         id="tabs",value='contexte',
                         children=[
                             dcc.Tab(label='Contexte' , value='contexte', className='tab', selected_className='selected-tab'),
-                            dcc.Tab(label='Stats', children=[
-                                dcc.Tabs(id='stats-subtabs', children=[
-                                    dcc.Tab(label='Aperçu des Données', children=[
-                                        html.Div([
-                                            dash_table.DataTable(
-                                                id='data-table',
-                                                columns=[{"name": i, "id": i} for i in self.df.columns],
-                                                data=self.df.head(100).to_dict('records'),
-                                                page_size=10,
-                                                filter_action='native',
-                                                sort_action='native',
-                                                fixed_rows={'headers': True},
-                                                style_table={'overflowX': 'auto'},
-                                                style_cell={
-                                                    'minWidth': '30px',
-                                                    'maxWidth': '100px',
-                                                    'whiteSpace': 'nowrap',
-                                                    'padding': '2px',          # Reduced padding
-                                                    'fontSize': '12px',        # Decreased font size
-                                                    'textAlign': 'center',
-                                                    'lineHeight': '1',          # Added line height
-                                                    'border': 'none'  # Remove cell borders
-                                                },
-                                                style_header={
-                                                    'backgroundColor': '#f0f0f0',
-                                                    'fontWeight': 'bold',
-                                                    'fontSize': '12px',        # Decreased header font size
-                                                    'textAlign': 'center',
-                                                    'lineHeight': '1',          # Added line height
-                                                    'border': 'none'  # Remove header borders
-                                                },
-                                                style_data_conditional=[
-                                                    {
-                                                        'if': {'row_index': 'odd'},
-                                                        'backgroundColor': '#fafafa'
-                                                    }
-                                                ],
-                                            ),
-                                            html.Button("Download CSV", id="download-button", n_clicks=0, className='download-button'),  # Added download button
-                                            dcc.Download(id="download-dataframe-csv")  # Added Download component
-                                        ], className='box')
-                                    ]),
-                                    dcc.Tab(label='KPI', children=[
-                                        html.Div([
-                                            html.H1('Statistiques Avancées'),
-                                            html.H2('Filtres'), 
-                                            html.Div(
-                                                className='filtre-container',
-                                                style={'display': 'flex', 'flexDirection': 'row', 'gap': '20px'},
-                                                children=[
-                                                    html.Div(
-                                                        className='option-box dropdown-item',
-                                                        style={'flex': '1', 'maxWidth': '500px'},
-                                                        children=[
-                                                            html.Label("Communes", className='dropdown-label'),
-                                                            dcc.Dropdown(
-                                                                id='commune_filtre',
-                                                                options=[{'label': commune, 'value': commune} for commune in self.df['Nom__commune_(BAN)'].value_counts().index],
-                                                                multi=True,
-                                                                placeholder='Choisissez une ou plusieurs communes'
-                                                            ), 
-                                                        ]
-                                                    ),
-                                                    html.Div(
-                                                        className='option-box dropdown-item',
-                                                        style={'flex': '1', 'maxWidth': '500px'},
-                                                        children=[
-                                                            html.Label("Période de construction", className='dropdown-label'),
-                                                            dcc.Dropdown(
-                                                                id='periode-filtre',
-                                                                options=[{'label': periode, 'value': periode} for periode in self.df['Période_construction'].unique()],
-                                                                multi=True,
-                                                                placeholder='Choisissez une ou plusieurs périodes de construction'
-                                                            ), 
-                                                        ]
-                                                    ),
-                                                    html.Div(
-                                                        className='option-box dropdown-item',
-                                                        children=[
-                                                            html.Label("Etiquette DPE", className='dropdown-label'),
-                                                            dcc.Checklist(
-                                                                id='etiquette_dpe_filtre',
-                                                                options=[{'label': etiquette, 'value': etiquette} for etiquette in sorted(self.df['Etiquette_DPE'].unique())],
-                                                                value=['A', 'B', 'C', 'D', 'E', 'F', 'G'],
-                                                                inline=True,  
-                                                                inputStyle={'margin-right': '10px'}
-                                                            ), 
-                                                        ]
-                                                    ),
-                                                    html.Div(id='filtre-container', style={'display': 'flex','flexDirection': 'row','justifyContent': 'center','alignItems': 'center','width': '100%','textAlign': 'center'})
-                                                ]
-                                            ), 
-                                            html.Div(id='kpi-container')             
-                                        ], className='box')
-                                    ])
-                                ])
-                            ]),
+                            dcc.Tab(label='Stats',value='stats', className='tab', selected_className='selected-tab'),
+                                
                             dcc.Tab(label='Graph',value='graph', className='tab', selected_className='selected-tab'),
                             dcc.Tab(label='Prediction',value='prediction', className='tab', selected_className='selected-tab')
                     
@@ -155,6 +60,120 @@ class DashApp:
                     }
                 )
         
+
+
+
+    def render_stats(self):
+              return html.Div([  dcc.Tabs(id='stats-subtabs', value='data_sub' , children=[
+                                    dcc.Tab(label='Aperçu des Données', value='data_sub', className='subtab_stats', selected_className='selected-tab'),
+                                        
+                                    dcc.Tab(label='KPI' , value='kpi_sub', className='subtab_stats', selected_className='selected-tab'),
+                                        
+                                    ]),
+                                
+                            html.Div(id='stats-content')
+                        ])
+    
+
+    def render_table_stats(self):
+        return html.Div([
+                            dash_table.DataTable(
+                                id='data-table',
+                                columns=[{"name": i, "id": i} for i in self.df.columns],
+                                data=self.df.head(100).to_dict('records'),
+                                page_size=10,
+                                filter_action='native',
+                                sort_action='native',
+                                fixed_rows={'headers': True},
+                                style_table={'overflowX': 'auto'},
+                                style_cell={
+                                    'minWidth': '30px',
+                                    'maxWidth': '100px',
+                                    'whiteSpace': 'nowrap',
+                                    'padding': '2px',          # Reduced padding
+                                    'fontSize': '12px',        # Decreased font size
+                                    'textAlign': 'center',
+                                    'lineHeight': '1',          # Added line height
+                                    'border': 'none'  # Remove cell borders
+                                },
+                                style_header={
+                                    'backgroundColor': '#f0f0f0',
+                                    'fontWeight': 'bold',
+                                    'fontSize': '12px',        # Decreased header font size
+                                    'textAlign': 'center',
+                                    'lineHeight': '1',          # Added line height
+                                    'border': 'none'  # Remove header borders
+                                },
+                                style_data_conditional=[
+                                    {
+                                        'if': {'row_index': 'odd'},
+                                        'backgroundColor': '#fafafa'
+                                    }
+                                ],
+                            ),
+                            html.Button("Download CSV", id="download-button", n_clicks=0, className='download-button'),  # Added download button
+                            dcc.Download(id="download-dataframe-csv")  # Added Download component
+                        ], className='box')
+                    
+        
+
+
+    def render_kpi(self):
+
+        return html.Div([
+                            html.H1('Statistiques Avancées'),
+                            html.H2('Filtres'), 
+                            html.Div(
+                                className='filtre-container',
+                                style={'display': 'flex', 'flexDirection': 'row', 'gap': '20px'},
+                                children=[
+                                    html.Div(
+                                        className='option-box dropdown-item',
+                                        style={'flex': '1', 'maxWidth': '500px'},
+                                        children=[
+                                            html.Label("Communes", className='dropdown-label'),
+                                            dcc.Dropdown(
+                                                id='commune_filtre',
+                                                options=[{'label': commune, 'value': commune} for commune in self.df['Nom__commune_(BAN)'].value_counts().index],
+                                                multi=True,
+                                                placeholder='Choisissez une ou plusieurs communes'
+                                            ), 
+                                        ]
+                                    ),
+                                    html.Div(
+                                        className='option-box dropdown-item',
+                                        style={'flex': '1', 'maxWidth': '500px'},
+                                        children=[
+                                            html.Label("Période de construction", className='dropdown-label'),
+                                            dcc.Dropdown(
+                                                id='periode-filtre',
+                                                options=[{'label': periode, 'value': periode} for periode in self.df['Période_construction'].unique()],
+                                                multi=True,
+                                                placeholder='Choisissez une ou plusieurs périodes de construction'
+                                            ), 
+                                        ]
+                                    ),
+                                    html.Div(
+                                        className='option-box dropdown-item',
+                                        children=[
+                                            html.Label("Etiquette DPE", className='dropdown-label'),
+                                            dcc.Checklist(
+                                                id='etiquette_dpe_filtre',
+                                                options=[{'label': etiquette, 'value': etiquette} for etiquette in sorted(self.df['Etiquette_DPE'].unique())],
+                                                value=['A', 'B', 'C', 'D', 'E', 'F', 'G'],
+                                                inline=True,  
+                                                inputStyle={'margin-right': '10px'}
+                                            ), 
+                                        ]
+                                    ),
+                                    html.Div(id='filtre-container', style={'display': 'flex','flexDirection': 'row','justifyContent': 'center','alignItems': 'center','width': '100%','textAlign': 'center'})
+                                ]
+                            ), 
+                            html.Div(id='kpi-container')             
+                        ], className='box')
+
+
+
     def render_graph_visual(self):
         return html.Div(
                                             className='box', # Main container box
@@ -652,6 +671,16 @@ class DashApp:
                 return self.render_graph_visual()
             elif tab == 'cartographie_sub':
                 return self.render_cartographie()
+
+        @self.app.callback(
+            Output('stats-content', 'children'),
+            [Input('stats-subtabs', 'value')]
+        )
+        def render_stats_content(tab):
+            if tab == 'data_sub':
+                return self.render_table_stats()
+            elif tab == 'kpi_sub':
+                return self.render_kpi()
             
             
 
