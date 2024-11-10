@@ -13,6 +13,7 @@ import  uuid
 import plotly.io as pio  # Add import for Plotly
 import io
 import plotly.graph_objects as go
+import json
 
 
 class DashApp:
@@ -87,9 +88,8 @@ class DashApp:
                                 sort_action='native',
                                 fixed_rows={'headers': True},
                                 style_table={'overflowX': 'auto'},
-                                style_cell={
-                                    'minWidth': '30px',
-                                    'maxWidth': '100px',
+                                style_cell={  # Update styles for cells
+                                    'width':'100px',  # Set max-width to prevent overflow
                                     'whiteSpace': 'nowrap',
                                     'padding': '2px',          # Reduced padding
                                     'fontSize': '12px',        # Decreased font size
@@ -123,39 +123,48 @@ class DashApp:
 
         return html.Div([
                             html.H1('Statistiques Avancées'),
-                            html.H2('Filtres'), 
+                            html.P('Voici quelques indicateurs clés pour mieux comprendre les données.'),
+                            html.H3('Filtres' , style={'textAlign': 'center'}), 
                             html.Div(
                                 className='filtre-container',
-                                style={'display': 'flex', 'flexDirection': 'row', 'gap': '20px'},
+                                style={'display': 'flex', 'flexDirection': 'column', 'gap': '20px'},
                                 children=[
                                     html.Div(
-                                        className='option-box dropdown-item',
-                                        style={'flex': '1', 'maxWidth': '500px'},
+                                        style={'display': 'flex', 'flexDirection': 'row', 'gap': '20px'},
                                         children=[
-                                            html.Label("Communes", className='dropdown-label'),
-                                            dcc.Dropdown(
-                                                id='commune_filtre',
-                                                options=[{'label': commune, 'value': commune} for commune in self.df['Nom__commune_(BAN)'].value_counts().index],
-                                                multi=True,
-                                                placeholder='Choisissez une ou plusieurs communes'
-                                            ), 
+                                            html.Div(
+                                                className='option-box dropdown-item',
+                                                style={'flex': '1', 'maxWidth': '500px'},
+                                                children=[
+                                                    html.Label("Communes", className='dropdown-label' , style={'textAlign': 'center'}),
+                                                    dcc.Dropdown(
+                                                        id='commune_filtre',
+                                                        options=[{'label': commune, 'value': commune} for commune in self.df['Nom__commune_(BAN)'].value_counts().index],
+                                                        multi=True,
+                                                        placeholder='Choisissez une ou plusieurs communes'
+                                                    ), 
+                                                ]
+                                            ),
+                                            html.Div(
+                                                className='option-box dropdown-item',
+                                                style={'flex': '1', 'maxWidth': '500px'},
+                                                children=[
+                                                    html.Label("Période de construction", className='dropdown-label' , style={'textAlign': 'center'}),
+                                                    dcc.Dropdown(
+                                                        id='periode-filtre',
+                                                        options=[{'label': periode, 'value': periode} for periode in self.df['Période_construction'].unique()],
+                                                        multi=True,
+                                                        placeholder='Choisissez une ou plusieurs périodes de construction'
+                                                    ), 
+                                                ]
+                                            ),
                                         ]
                                     ),
+                                    html.Div( style={'display': 'flex', 'flexDirection': 'row', 'gap': '20px' , 'justifyContent': 'center'},
+                                             children=[
                                     html.Div(
                                         className='option-box dropdown-item',
-                                        style={'flex': '1', 'maxWidth': '500px'},
-                                        children=[
-                                            html.Label("Période de construction", className='dropdown-label'),
-                                            dcc.Dropdown(
-                                                id='periode-filtre',
-                                                options=[{'label': periode, 'value': periode} for periode in self.df['Période_construction'].unique()],
-                                                multi=True,
-                                                placeholder='Choisissez une ou plusieurs périodes de construction'
-                                            ), 
-                                        ]
-                                    ),
-                                    html.Div(
-                                        className='option-box dropdown-item',
+                                        style={'textAlign': 'center' , 'width': '100%'},
                                         children=[
                                             html.Label("Etiquette DPE", className='dropdown-label'),
                                             dcc.Checklist(
@@ -166,88 +175,90 @@ class DashApp:
                                                 inputStyle={'margin-right': '10px'}
                                             ), 
                                         ]
+                                    )
+                                             ]
                                     ),
                                     html.Div(id='filtre-container', style={'display': 'flex','flexDirection': 'row','justifyContent': 'center','alignItems': 'center','width': '100%','textAlign': 'center'})
                                 ]
                             ), 
-                            html.Div(id='kpi-container')             
+                            html.Div(id='kpi-container', style={
+                                'display': 'grid',
+                                'gridTemplateColumns': '1fr 1fr',
+                                'gap': '20px',
+                                'justifyItems': 'center',
+                                'alignItems': 'center'
+                            })             
                         ], className='box')
 
 
 
     def render_graph_visual(self):
         return html.Div(
-                                            className='box', # Main container box
-                                            children=[
-                                                 html.H1("Dynamic Graph Dashboard with Removable Graphs"),
+                className='box',
+                children=[
+                    html.H1("Dynamic Graph Dashboard - ENEDIS"),
+                    html.P("Selectionnez les variables que vous voulez visualiser et le type de chart souhaité."),
+                    html.P("Vous pouvez ajouter plusieurs graphiques en cliquant sur le bouton 'Add Graph'."),
+                    html.P("Pour supprimer un graphique, cliquez sur le bouton remove en haut à bas du graphique."),
+                    html.I("La selection de une seule variable est favorable pour des performances optimales."),
+                    html.I("On peut réaliser des graphiques de type scatter, line, bar, histogram, box et pie selon les variables choisies."),
+                    html.Div([
+                        html.Div([
+                            html.Label("Select X Variable"),
+                            dcc.Dropdown(
+                                id='dropdown-x',
+                                options=[{'label': col, 'value': col} for col in self.df.columns],
+                                value='Variable1'
+                            )
+                        ], style={'width': '48%', 'display': 'inline-block', 'padding': '1%'}),
+                        html.Div([
+                            html.Label("Select Y Variable"),
+                            dcc.Dropdown(
+                                id='dropdown-y',
+                                options=[{'label': col, 'value': col} for col in self.df.columns],
+                                value=None
+                            )
+                        ], style={'width': '48%', 'display': 'inline-block', 'padding': '1%'}),
+                    ], style={'display': 'flex', 'justifyContent': 'space-between'}),
+                    html.Div([
+                        html.Div([
+                            html.Label("Select Color Variable (Optional)"),
+                            dcc.Dropdown(
+                                id='dropdown-color',
+                                options=[{'label': col, 'value': col} for col in self.df.columns],
+                                value=None
+                            )
+                        ], style={'width': '48%', 'display': 'inline-block', 'padding': '1%'}),
+                        html.Div([
+                            html.Label("Select Visualization Type"),
+                            dcc.Dropdown(
+                                id='dropdown-chart-type',
+                                options=[
+                                    {'label': 'Scatter', 'value': 'scatter'},
+                                    {'label': 'Line', 'value': 'line'},
+                                    {'label': 'Bar', 'value': 'bar'},
+                                    {'label': 'Histogram', 'value': 'histogram'},
+                                    {'label': 'Box', 'value': 'box'},
+                                    {'label': 'Pie', 'value': 'pie'},
+                                ],
+                                value='scatter',
+                                placeholder='Select a chart type'
+                            )
+                        ], style={'width': '48%', 'display': 'inline-block', 'padding': '1%'}),
+                    ], style={'display': 'flex', 'justifyContent': 'space-between'}),
+                    html.Button("Add Graph", id="add-graph-button", n_clicks=0, style={'margin-top': '20px', 'display': 'block', 'margin-left': 'auto', 'margin-right': 'auto'}),
+                    dcc.Store(id='graphs-store', data=[]),
 
-                                            # Dropdown for selecting x-axis variable
-                                            html.Div([
-                                                html.Label("Select X Variable"),
-                                                dcc.Dropdown(
-                                                    id='dropdown-x',
-                                                    options=[{'label': col, 'value': col} for col in self.df.columns],
-                                                    value='Variable1'
-                                                )
-                                            ], style={'width': '30%', 'display': 'inline-block', 'padding': '10px'}),
+                    html.Div(
+                        id='graph-container',
+                        style={'display': 'flex', 'flex-wrap': 'wrap', 'gap': '10px', 'width': '100%'}
+                    ),
+                    dcc.Download(id="download-plot")
+                ]
+            )
+        
 
-                                            # Dropdown for selecting y-axis variable
-                                            html.Div([
-                                                html.Label("Select Y Variable"),
-                                                dcc.Dropdown(
-                                                    id='dropdown-y',
-                                                    options=[{'label': col, 'value': col} for col in self.df.columns],
-                                                    value=None  # Default to no selection for univariate
-                                                )
-                                            ], style={'width': '30%', 'display': 'inline-block', 'padding': '10px'}),
-
-                                            # Dropdown for selecting color variable
-                                            html.Div([
-                                                html.Label("Select Color Variable (Optional)"),
-                                                dcc.Dropdown(
-                                                    id='dropdown-color',
-                                                    options=[{'label': col, 'value': col} for col in self.df.columns],
-                                                    value=None  # Optional color selection
-                                                )
-                                            ], style={'width': '30%', 'display': 'inline-block', 'padding': '10px'}),
-
-                                            # Dropdown for selecting chart type
-                                            html.Div([
-                                                html.Label("Select Visualization Type"),
-                                                dcc.Dropdown(
-                                                    id='dropdown-chart-type',
-                                                    options=[
-                                                        {'label': 'Scatter', 'value': 'scatter'},
-                                                        {'label': 'Line', 'value': 'line'},
-                                                        {'label': 'Bar', 'value': 'bar'},
-                                                        {'label': 'Histogram', 'value': 'histogram'},
-                                                        {'label': 'Box', 'value': 'box'},
-                                                        {'label': 'Pie', 'value': 'pie'},
-                                                        # Add more types as needed
-                                                    ],
-                                                    value='scatter',
-                                                    placeholder='Select a chart type'
-                                                )
-                                            ], style={'width': '30%', 'display': 'inline-block', 'padding': '10px'}),
-
-                                            # Button to add graph
-                                            html.Button("Add Graph", id="add-graph-button", n_clicks=0, style={'margin-top': '30spx'}),
-
-                                            # Hidden storage for graph data
-                                            dcc.Store(id='graphs-store', data=[]),
-
-                                            # Resizable graph container with 100% width
-                     
-                                            html.Div(
-                                                            id='graph-container',
-                                                            style={'display': 'flex', 'flex-wrap': 'wrap', 'gap': '10px', 'width': '100%'}
-                                                        )
-                                                    
-                                        ])
-       
-
-                                    
-
+                            
 
 
     def render_graph(self):
@@ -368,7 +379,7 @@ class DashApp:
 
         fig = px.scatter_mapbox(
 
-            self.df.sample(60000),
+            self.df.sample(20000),
             lat="Coordonnée_cartographique_Y_(BAN)",
             lon="Coordonnée_cartographique_X_(BAN)",
             color="Etiquette_DPE",
@@ -413,7 +424,9 @@ class DashApp:
         return html.Div(
             className='box',
             children=[
-                html.H3('Carte Interactive du DPE en 69', className='map-title'),      
+                html.H3('Carte Interactive du DPE en 69', className='map-title'),  
+                html.P('Survolez les points pour plus d\'informations. Cliquez sur les étiquettes pour les afficher ou les masquer. Zoomez (bouton en haut à gauche) et déplacez vous sur la carte pour explorer les données.'), 
+                html.I('Les points sont échantillonnés pour des raisons de performance.' , style={"font-size": "10px"}),
                 dcc.Graph(figure=fig)
             ],
             style={
@@ -1058,38 +1071,30 @@ class DashApp:
             ]
 
         @self.app.callback(
-            Output({'type': 'download-dataframe-png-graph', 'index': ALL}, 'data'),
+            Output('download-plot', 'data'),
             Input({'type': 'download-button-graph', 'index': ALL}, 'n_clicks'),
             State('graphs-store', 'data'),
-            prevent_initial_call=True
+            prevent_initial_call=True,
         )
         def download_graph(n_clicks, graphs_data):
-           
-            ctx = dash.callback_context
-            if n_clicks:
-                # Extract graph id from the triggered download button
-                if ctx.triggered and 'download-button-graph' in ctx.triggered[0]['prop_id']:
-             
-                    # Extract graph id from the triggered download button
-                    button_id_dict = eval(ctx.triggered[0]['prop_id'].split('.')[0])
-                    graph_id = button_id_dict['index']
-                   
-                 
-                    
-                    # Find the graph with the matching id
-                    fig_dict = next((graph for graph in graphs_data if graph['id'] == graph_id), None)
-                    if fig_dict:
-                    
-                        # Convert the figure to an image in bytes
-                        fig = go.Figure(fig_dict["figure"])
-                        image_bytes = io.BytesIO()
-                        fig.write_image(image_bytes, format="png")
-                        image_bytes.seek(0)
-                        # Use dcc.send_bytes to send the image as a downloadable file
-                        return [dcc.send_bytes(lambda: image_bytes.read(), filename=f"graph_{graph_id}.png")]
+            
+            if not any(n_clicks):
+                return  # Avoid triggering if no button is actually clicked
 
-                # If no download is triggered, return an empty list (to match ALL output)
-                return [None] * len(n_clicks)
+            # Find the specific button with an incremented n_clicks
+            for i, n_clicks in enumerate(n_clicks):
+                if n_clicks:
+                    # Retrieve the graph id and data for the clicked button
+                    graph_id = graphs_data[i]['id']
+                    fig_data = graphs_data[i]['figure']
+                    
+                    # Convert figure JSON data to a Plotly figure
+                    fig = pio.from_json(json.dumps(fig_data))
+                    img_bytes = fig.to_image(format="png")
+
+                    # Trigger file download
+                    return dcc.send_bytes(img_bytes, filename=f"{graph_id}_plot.png")
+            return
 
 
         
