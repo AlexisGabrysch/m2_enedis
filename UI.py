@@ -313,8 +313,8 @@ class DashApp:
                                                     "L'application se découpe en 4 onglets:"
                                                 ]),
                                                 html.Ul([
-                                                    html.Li("Contexte : "),
-                                                    html.Li("Statistiques : "),
+                                                    html.Li("Contexte : présentation du projet"),
+                                                    html.Li("Statistiques : aperçu des données et indicateurs clés"),
                                                     html.Li("Visualisations : visualisation des données"),
                                                     html.Li("Prédiction de la consommation et du DPE de votre logement ")
                                                 ]),
