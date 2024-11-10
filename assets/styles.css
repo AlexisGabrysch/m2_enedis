@@ -119,7 +119,7 @@
     flex-direction: column;
     align-items: center;
     cursor: pointer;
-    margin: 10px auto; /* Add some margin between items */
+    margin: 10px auto; 
 }
 
 .building-type-radioitems .dash-radioitems input {

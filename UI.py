@@ -25,102 +25,28 @@ class DashApp:
 
         self.setup_layout()
         self.setup_callbacks()
+        self.convert_coordinates()
+
+    def convert_coordinates(self):
+            # Initialisation du transformateur de Lambert-93 (EPSG:2154) vers WGS84 (EPSG:4326)
+        transformer = Transformer.from_crs("EPSG:2154", "EPSG:4326", always_xy=True)
+
+        # Coordonnées en Lambert-93
+        y_coords = self.df["Coordonnée_cartographique_X_(BAN)"].values
+        x_coords = self.df["Coordonnée_cartographique_Y_(BAN)"].values
+
+        # Conversion des coordonnées en latitude et longitude
+        lat_lon_coords = [transformer.transform(y, x) for x, y in zip(x_coords, y_coords)]
+        self.df["Coordonnée_cartographique_X_(BAN)"] = [coord[0] for coord in lat_lon_coords]
+        self.df["Coordonnée_cartographique_Y_(BAN)"] = [coord[1] for coord in lat_lon_coords]
+        print("fin de la conversion")
 
     def setup_layout(self):
         self.app.layout = html.Div([
-            html.Div(
-                children=[
                     dcc.Tabs(
-                        id="tabs",
+                        id="tabs",value='contexte',
                         children=[
-                            dcc.Tab(label='Contexte', children=[
-                                html.Div(
-                                    className='box',
-                                    children=[
-                                        html.Div(
-                                            className='contexte-section',
-                                            children=[
-                                                html.H1(
-                                                    "Analyse de la consommation énergétique et des étiquettes DPE dans le Rhône",
-                                                    style={'textAlign': 'center'}
-                                                ),
-                                            ]
-                                        ),
-                                        html.Div(
-                                            className='contexte-section',
-                                            children=[
-                                                html.H2("Objectifs du projet"),
-                                                html.P([
-                                                    "La transition écologique est aujourd'hui au cœur des enjeux de société. "
-                                                    "Chez GreenTechn, notre ambition est de contribuer activement à ce changement en associant notre expertise technologique aux défis environnementaux. "
-                                                    "Pour cela, cette application, conçue pour analyser la consommation énergétique des logements dans le Rhône et les classer selon leur Diagnostic de Performance Énergétique (DPE). "
-                                                    "Cette démarche vise à fournir des insights concrets pour soutenir la transition vers des bâtiments plus performants et respectueux de l’environnement. "
-                                                    "Ainsi que de prédire la consommation et le DPE des logements. "
-                                                    "Les données de ce projet proviennent de l'API de l'",
-                                                    html.A("ADEME", href="https://data.ademe.fr/datasets/dpe-v2-logements-existants/api-doc"), "."
-                                                ]),
-                                            ]
-                                        ),
-                                        html.Div(
-                                            className='contexte-section',
-                                            children=[
-                                                html.H2("Structure de l'application"),
-                                                html.P([
-                                                    "L'application se découpe en 4 onglets:"
-                                                ]),
-                                                html.Ul([
-                                                    html.Li("Contexte : "),
-                                                    html.Li("Stats : "),
-                                                    html.Li("Graphique : visualisation des données"),
-                                                    html.Li("Prédiction de la consommation et du DPE de votre logement ")
-                                                ]),
-                                            ]
-                                        ),
-                                        html.Div(
-                                            className='contexte-section',
-                                            children=[
-                                                html.H2("Explication DPE"),
-                                                html.P(
-                                                    "Le Diagnostic de Performance Énergétique (DPE) est un document qui évalue la consommation d'énergie et l'impact environnemental d'un bâtiment ou d'un logement. Il se présente comme cela :"
-                                                ),
-                                                html.Img(
-                                                    src="assets/dpe_contexte.png",
-                                                    style={'display': 'block', 'margin': '20px auto', 'max-width': '80%'}
-                                                ),
-                                                html.P(
-                                                    "Le DPE attribue une étiquette énergétique allant de A à G, A étant la meilleure note et G la moins bonne. Cette étiquette est calculée en fonction de la consommation d'énergie du logement et de son impact sur l'environnement."
-                                                ),
-                                                html.P(
-                                                    "Le DPE est un outil essentiel pour informer les propriétaires et les locataires sur la performance énergétique d'un logement. Il permet de sensibiliser les occupants à leur consommation d'énergie et de les encourager à adopter des comportements plus éco-responsables."
-                                                ),
-                                            ]
-                                        ),
-                                        html.Div(
-                                            className='contexte-section',
-                                            children=[
-                                                html.H2("Contributeurs"),
-                                                html.P("Les contributeurs de ce projet sont : Alexis GABRYSCH, Lucile PERBET et Joël SOLLARI.")
-                                            ]
-                                        ),
-                                        html.Div(
-                                            className='box',
-                                            children=[
-                                                html.H2("Rafraîchissement des données"),
-                                                html.P("Cliquez sur le bouton ci-dessous pour rafraîchir les données. Cette opération peut prendre quelques minutes. De plus, les données de l'API sont mises à jour tout les mois seulement."),
-                                                html.Div([
-                                                    html.Div(id='last-refresh-date', style={'margin-bottom': '10px', 'fontWeight': 'bold'}),
-                                                    html.Button('Rafraîchir', id='refresh-button', n_clicks=0),
-                                                    dcc.Loading(
-                                                        id="loading-refresh",
-                                                        type="default",
-                                                        children=html.Div(id='refresh-status')
-                                                    )
-                                                ])
-                                            ]
-                                        )
-                                    ]
-                                )
-                            ]), 
+                            dcc.Tab(label='Contexte' , value='contexte', className='tab', selected_className='selected-tab'),
                             dcc.Tab(label='Stats', children=[
                                 dcc.Tabs(id='stats-subtabs', children=[
                                     dcc.Tab(label='Aperçu des Données', children=[
@@ -218,13 +144,19 @@ class DashApp:
                                     ])
                                 ])
                             ]),
-                            dcc.Tab(label='Graph', children=[
-                                dcc.Tabs(id="graph-subtabs", children=[
-                                    dcc.Tab(label='Graphique', children=[
-                                        html.Div("Contenu du sous-tab Graphique"),
-
-
-                                        html.Div(
+                            dcc.Tab(label='Graph',value='graph', className='tab', selected_className='selected-tab'),
+                            dcc.Tab(label='Prediction',value='prediction', className='tab', selected_className='selected-tab')
+                    
+                        ]), html.Div(id='tabs-content')
+                    ],
+                    style={
+                        'width': '80%',
+                        'margin': '0 auto'
+                    }
+                )
+        
+    def render_graph_visual(self):
+        return html.Div(
                                             className='box', # Main container box
                                             children=[
                                                  html.H1("Dynamic Graph Dashboard with Removable Graphs"),
@@ -290,58 +222,128 @@ class DashApp:
                                                             id='graph-container',
                                                             style={'display': 'flex', 'flex-wrap': 'wrap', 'gap': '10px', 'width': '100%'}
                                                         )
-                         
                                                     
                                         ])
-                                   
+
+                                    
 
 
 
+    def render_graph(self):
+
+        return html.Div([
+
+                dcc.Tabs(id="graph-subtabs", value='graphique_sub',  children=[
+                        dcc.Tab(label='Graphique' , className='subtab_visu', selected_className='selected-tab' , value='graphique_sub'),
+
+                                        
+    
+                        dcc.Tab(label='Cartographie' ,  className='subtab_visu', selected_className='selected-tab' , value='cartographie_sub')
                                     ]),
+                                
+                html.Div(id='graph-content')
+                ])
+    
+                            
+     
+       
 
 
 
-
-
-
-
-                                    dcc.Tab(label='Cartographie', children=[
+    def render_contexte(self):
+        return html.Div(children=[
+                                html.Div(
+                                    className='box',
+                                    children=[
                                         html.Div(
+                                            className='contexte-section',
                                             children=[
-                                                self.render_cartographie()
+                                                html.H1(
+                                                    "Analyse de la consommation énergétique et des étiquettes DPE dans le Rhône",
+                                                    style={'textAlign': 'center'}
+                                                ),
+                                            ]
+                                        ),
+                                        html.Div(
+                                            className='contexte-section',
+                                            children=[
+                                                html.H2("Objectifs du projet"),
+                                                html.P([
+                                                    "La transition écologique est aujourd'hui au cœur des enjeux de société. "
+                                                    "Chez GreenTechn, notre ambition est de contribuer activement à ce changement en associant notre expertise technologique aux défis environnementaux. "
+                                                    "Pour cela, cette application, conçue pour analyser la consommation énergétique des logements dans le Rhône et les classer selon leur Diagnostic de Performance Énergétique (DPE). "
+                                                    "Cette démarche vise à fournir des insights concrets pour soutenir la transition vers des bâtiments plus performants et respectueux de l’environnement. "
+                                                    "Ainsi que de prédire la consommation et le DPE des logements. "
+                                                    "Les données de ce projet proviennent de l'API de l'",
+                                                    html.A("ADEME", href="https://data.ademe.fr/datasets/dpe-v2-logements-existants/api-doc"), "."
+                                                ]),
+                                            ]
+                                        ),
+                                        html.Div(
+                                            className='contexte-section',
+                                            children=[
+                                                html.H2("Structure de l'application"),
+                                                html.P([
+                                                    "L'application se découpe en 4 onglets:"
+                                                ]),
+                                                html.Ul([
+                                                    html.Li("Contexte : "),
+                                                    html.Li("Stats : "),
+                                                    html.Li("Graphique : visualisation des données"),
+                                                    html.Li("Prédiction de la consommation et du DPE de votre logement ")
+                                                ]),
+                                            ]
+                                        ),
+                                        html.Div(
+                                            className='contexte-section',
+                                            children=[
+                                                html.H2("Explication DPE"),
+                                                html.P(
+                                                    "Le Diagnostic de Performance Énergétique (DPE) est un document qui évalue la consommation d'énergie et l'impact environnemental d'un bâtiment ou d'un logement. Il se présente comme cela :"
+                                                ),
+                                                html.Img(
+                                                    src="assets/dpe_contexte.png",
+                                                    style={'display': 'block', 'margin': '20px auto', 'max-width': '80%'}
+                                                ),
+                                                html.P(
+                                                    "Le DPE attribue une étiquette énergétique allant de A à G, A étant la meilleure note et G la moins bonne. Cette étiquette est calculée en fonction de la consommation d'énergie du logement et de son impact sur l'environnement."
+                                                ),
+                                                html.P(
+                                                    "Le DPE est un outil essentiel pour informer les propriétaires et les locataires sur la performance énergétique d'un logement. Il permet de sensibiliser les occupants à leur consommation d'énergie et de les encourager à adopter des comportements plus éco-responsables."
+                                                ),
+                                            ]
+                                        ),
+                                        html.Div(
+                                            className='contexte-section',
+                                            children=[
+                                                html.H2("Contributeurs"),
+                                                html.P("Les contributeurs de ce projet sont : Alexis GABRYSCH, Lucile PERBET et Joël SOLLARI.")
+                                            ]
+                                        ),
+                                        html.Div(
+                                            className='box',
+                                            children=[
+                                                html.H2("Rafraîchissement des données"),
+                                                html.P("Cliquez sur le bouton ci-dessous pour rafraîchir les données. Cette opération peut prendre quelques minutes. De plus, les données de l'API sont mises à jour tout les mois seulement."),
+                                                html.Div([
+                                                    html.Div(id='last-refresh-date', style={'margin-bottom': '10px', 'fontWeight': 'bold'}),
+                                                    html.Button('Rafraîchir', id='refresh-button', n_clicks=0),
+                                                    dcc.Loading(
+                                                        id="loading-refresh",
+                                                        type="default",
+                                                        children=html.Div(id='refresh-status')
+                                                    )
+                                                ])
                                             ]
                                         )
-                                    ])
-                                ])
-                            ]),
-                            dcc.Tab(label='Prediction', children=[
-                                html.Div(
-                                    children=[
-                                        self.render_prediction_page_dpe()
                                     ]
+
                                 )
-                            ])
-                        ])
-                    ],
-                    style={
-                        'width': '80%',
-                        'margin': '0 auto'
-                    }
-                )
-            ])
-        
+                                ]) 
+
+    
     def render_cartographie(self):
-        # Initialisation du transformateur de Lambert-93 (EPSG:2154) vers WGS84 (EPSG:4326)
-        transformer = Transformer.from_crs("EPSG:2154", "EPSG:4326", always_xy=True)
-
-        # Coordonnées en Lambert-93
-        y_coords = self.df["Coordonnée_cartographique_X_(BAN)"].values
-        x_coords = self.df["Coordonnée_cartographique_Y_(BAN)"].values
-
-        # Conversion des coordonnées en latitude et longitude
-        lat_lon_coords = [transformer.transform(y, x) for x, y in zip(x_coords, y_coords)]
-        self.df["Coordonnée_cartographique_X_(BAN)"] = [coord[0] for coord in lat_lon_coords]
-        self.df["Coordonnée_cartographique_Y_(BAN)"] = [coord[1] for coord in lat_lon_coords]
+    
 
         fig = px.scatter_mapbox(
             self.df.sample(10000),
@@ -367,7 +369,7 @@ class DashApp:
                 "Coordonnée_cartographique_X_(BAN)": False,
                 "Coordonnée_cartographique_Y_(BAN)": False
             },
-            zoom=5,
+            zoom=7,
         )
 
         fig.update_layout(
@@ -625,6 +627,35 @@ class DashApp:
         )
 
     def setup_callbacks(self):
+
+        @self.app.callback(
+            Output('tabs-content', 'children'),
+            [Input('tabs', 'value')]
+        )
+        def render_tab_content(tab):
+            if tab == 'contexte':
+                return self.render_contexte()
+            elif tab == 'stats':
+                return self.render_stats()
+            elif tab == 'graph':
+                return self.render_graph()
+            elif tab == 'prediction':
+                return self.render_prediction_page_dpe()
+
+            
+        @self.app.callback(
+            Output('graph-content', 'children'),
+            [Input('graph-subtabs', 'value')]
+        )
+        def render_graph_content(tab):
+            if tab == 'graphique_sub':
+                return self.render_graph_visual()
+            elif tab == 'cartographie_sub':
+                return self.render_cartographie()
+            
+            
+
+
         @self.app.callback(
             Output("download-dataframe-csv", "data"),
             Input("download-button", "n_clicks"),
@@ -737,20 +768,22 @@ class DashApp:
 
                     # Fetch and save data
                     api = API()
-                    self.df = api.refresher()
+                    df = api.refresher()
+                    if df is not None:
+                        self.df = df
                     
-                    # Extract the latest date_reception_dpe
-                    if 'Date_réception_DPE' in self.df.columns:
-                        latest_date = self.df['Date_réception_DPE'].dropna().sort_values(ascending=False).iloc[0]
-                        latest_date_str = f'Dernier rafraîchissement : {latest_date}'
-                    else:
-                        latest_date_str = 'Dernier rafraîchissement : inconnu'
+                        # Extract the latest date_reception_dpe
+                        if 'Date_réception_DPE' in self.df.columns:
+                            latest_date = self.df['Date_réception_DPE'].dropna().sort_values(ascending=False).iloc[0]
+                            latest_date_str = f'Dernier rafraîchissement : {latest_date}'
+                        else:
+                            latest_date_str = 'Dernier rafraîchissement : inconnu'
 
-                    # Update status and button label after processing
-                    status_message = 'Données rafraîchies'
-                    button_label = 'Rafraîchi'
-                    disabled = False
-                    return status_message, button_label, disabled, latest_date_str
+                        # Update status and button label after processing
+                        status_message = 'Données rafraîchies'
+                        button_label = 'Rafraîchi'
+                        disabled = False
+                        return status_message, button_label, disabled, latest_date_str
                 except Exception as e:
                     # Handle potential errors
                     status_message = f'Erreur : {str(e)}'
