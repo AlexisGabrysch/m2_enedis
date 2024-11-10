@@ -365,7 +365,27 @@ class DashApp:
                                                         type="default",
                                                         children=html.Div(id='refresh-status')
                                                     )
-                                                ])
+                                                ]),
+                                                # Nouveau compartiment pour réentraîner les données
+                                                html.Div(
+                                                    className='retrain-section',
+                                                    children=[
+                                                        html.H2("Réentrainement des données"),
+                                                        html.P("Cliquez sur le bouton ci-dessous pour réentraîner le modèle avec les dernières données."),
+                                                        html.Button('Réentraîner', id='retrain-button', n_clicks=0, className='retrain-button'),
+                                                        dcc.Loading(
+                                                            id="loading-retrain",
+                                                            type="default",
+                                                            children=html.Div(id='retrain-status')
+                                                        )
+                                                    ],
+                                                    style={
+                                                        'margin-top': '20px',
+                                                        'padding': '10px',
+                                                        'border': '1px solid #ccc',
+                                                        'borderRadius': '5px'
+                                                    }
+                                                )
                                             ]
                                         )
                                     ]
@@ -1096,6 +1116,38 @@ class DashApp:
                     return dcc.send_bytes(img_bytes, filename=f"{graph_id}_plot.png")
             return
 
+        # réentrainement des données
+        @self.app.callback(
+            [Output('retrain-status', 'children'),
+             Output('retrain-button', 'children'),
+             Output('retrain-button', 'disabled')],
+            [Input('retrain-button', 'n_clicks')]
+        )
+        
+        def retrain_model(n_clicks):
+            
+            if n_clicks > 0:
+                try:
+                    # Disable the button during processing
+                    disabled = True
+                    status_message = 'En cours de traitement...'
+
+                    # Réentrainement du modèle
+                    self.model.train()
+                    
+                    # Update status and button label after processing
+                    status_message = 'Modèle réentrainé'
+                    button_label = 'Réentraîné'
+                    disabled = False
+                    return status_message, button_label, disabled
+                except Exception as e:
+                    # Handle potential errors
+                    status_message = f'Erreur : {str(e)}'
+                    button_label = 'Réentraîner'
+                    disabled = False
+                    return status_message, button_label, disabled
+
+            return '', 'Réentraîner', False
 
         
     def run(self):
