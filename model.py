@@ -14,6 +14,9 @@ class Model:
         # self.scaler = joblib.load('model/scaler.pkl')
         self.etiquette = ['A', 'B', 'C', 'D', 'E', 'F', 'G']
 
+    def fine_tune(self, df):
+        pass
+
     def train(self, df, test_size=0.2):
         df = df.dropna()
         

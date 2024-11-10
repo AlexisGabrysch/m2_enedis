@@ -11,6 +11,8 @@ import dash_table
 import os
 import  uuid
 import plotly.io as pio  # Add import for Plotly
+import io
+import plotly.graph_objects as go
 
 
 class DashApp:
@@ -22,7 +24,8 @@ class DashApp:
         
         self.model = Model()
         self.df = df
-
+        self.fig = None  
+        self.fig_dict = {}
         self.setup_layout()
         self.setup_callbacks()
         self.convert_coordinates()
@@ -60,8 +63,6 @@ class DashApp:
                     }
                 )
         
-
-
 
     def render_stats(self):
               return html.Div([  dcc.Tabs(id='stats-subtabs', value='data_sub' , children=[
@@ -243,6 +244,7 @@ class DashApp:
                                                         )
                                                     
                                         ])
+       
 
                                     
 
@@ -691,7 +693,7 @@ class DashApp:
             prevent_initial_call=True,
         )
         def download_csv(n_clicks):
-            return dcc.send_data_frame(self.df.to_csv, "data.csv")
+            return dcc.send_file("assets/enedis_69.csv")
 
         @self.app.callback(
             Output('general-info-section', 'className'),
@@ -953,13 +955,14 @@ class DashApp:
             Output('graphs-store', 'data'),
             Input('add-graph-button', 'n_clicks'),
             Input({'type': 'remove-button', 'index': ALL}, 'n_clicks'),
+            Input({'type': 'download-button-graph', 'index': ALL}, 'n_clicks'),
             State('dropdown-x', 'value'),
             State('dropdown-y', 'value'),
             State('dropdown-color', 'value'),
             State('dropdown-chart-type', 'value'),
             State('graphs-store', 'data')
         )
-        def update_graphs_store(add_clicks, remove_clicks, x_var, y_var, color_var, chart_type, graphs_data):
+        def update_graphs_store(add_clicks, remove_clicks,dnwl_button, x_var, y_var, color_var, chart_type, graphs_data):
             ctx = dash.callback_context
 
             # Check if the add button was clicked
@@ -1018,6 +1021,25 @@ class DashApp:
 
                 # Filter out the graph with the matching ID
                 graphs_data = [graph for graph in graphs_data if graph['id'] != graph_id_to_remove]
+            
+            elif ctx.triggered and 'download-button-graph' in ctx.triggered[0]['prop_id']:
+                button_id = ctx.triggered[0]['prop_id'].split('.')[0]
+                button_id = ctx.triggered[0]['prop_id'].split('.')[0]
+                button_id_dict = eval(button_id)
+                graph_id = button_id_dict['index']
+                
+                # Trouver la figure correspondante
+                fig_dict = next((graph for graph in graphs_data if graph['id'] == graph_id), None)
+                if fig_dict:
+                    # Convertir la figure en image bytes
+                    fig = go.Figure(fig_dict['figure'])
+                    buffer = io.BytesIO()
+                    fig.write_image(buffer, format="png")
+                    buffer.seek(0)
+                    dcc.send_file(buffer.read(), filename=f"graph_{graph_id}.png")
+        
+            
+
 
             # Return the updated list of graphs
             return graphs_data
@@ -1048,17 +1070,8 @@ class DashApp:
             ) for fig_dict in graphs_data
             ]
 
-        @self.app.callback(
-            Output("download-button-graph", "data"),
-            Input("download-button-graph", "n_clicks"),
-            prevent_initial_call=True,
-        )
-        def download_graph_png(n_clicks, graph_children):
-            if n_clicks:
-                fig = graph_children[0].props['figure']
-                png_bytes = pio.to_image(fig, format="png")
-                return dcc.send_bytes(png_bytes, "graph.png")
-            return
+
+
         
     def run(self):
         port = int(os.environ.get('PORT', 8050))
