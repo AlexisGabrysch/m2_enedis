@@ -17,10 +17,10 @@ class Model:
         self.etiquette = ['A', 'B', 'C', 'D', 'E', 'F', 'G']
         
     def Prepare_data(self, df):
-        print("la")
+       
         df_final = df.drop(df.loc[df[["Qualité_isolation_plancher_haut_toit_terrase", "Qualité_isolation_plancher_haut_comble_aménagé", "Qualité_isolation_plancher_haut_comble_perdu"]].notnull().sum(axis=1) > 1].index)
                    # Créer la nouvelle colonne
-        print("may")
+     
         df_final['Type_isolation_plancher_haut'] = df_final.apply(
             lambda row: 'terrasse' if pd.notnull(row['Qualité_isolation_plancher_haut_toit_terrase']) else
                         'comble_aménagé' if pd.notnull(row['Qualité_isolation_plancher_haut_comble_aménagé']) else
@@ -28,14 +28,14 @@ class Model:
                         np.nan,
             axis=1
         )
-        print("de")
+
         df_final["Climatisation"] = df_final["Type_énergie_climatisation"].apply(lambda x: True if pd.notnull(x) else False)
         df_final = df_final.drop(columns=["Type_énergie_climatisation" , "Qualité_isolation_plancher_haut_toit_terrase", "Qualité_isolation_plancher_haut_comble_aménagé", "Qualité_isolation_plancher_haut_comble_perdu" , 
                                           "Conso_éclairage_é_finale",  "Conso_refroidissement_é_finale", "Conso_auxiliaires_é_finale", "Nom__commune_(BAN)", "Code_INSEE_(BAN)", "Coordonnée_cartographique_X_(BAN)", 
                                           "Coordonnée_cartographique_Y_(BAN)", "Coût_total_5_usages", "N°_département_(BAN)", "Conso_ECS_é_finale" , "N°DPE" , "Date_réception_DPE"])
-        print("ggg")
+       
         df_final = df_final.dropna().reset_index(drop=True) 
-        print("mafeeey")
+       
         return df_final
 
     def fine_tuning(self, df):
@@ -43,7 +43,7 @@ class Model:
         label_encoder = LabelEncoder()
         
         df_final = self.Prepare_data(df)
-        print("mafrfefey")
+      
         X = df_final.drop(columns=['Conso_5_usages_é_finale', 'Etiquette_DPE'])
         y = df_final[['Conso_5_usages_é_finale', 'Etiquette_DPE']]
         # Encoder les étiquettes de la cible
@@ -112,17 +112,17 @@ class Model:
 
 
     def prediction(self, df, categorical_columns):
-        print("lz")
-        print(df.columns)
-        print("lzde")
+     
+        
+       
         X = pd.get_dummies(df, columns=categorical_columns)
-        print("dzzdz")
+      
         X = X.reindex(columns=self.features, fill_value=0)  # Ensure all columns are present
-        print("dllll")
+      
         X = self.scaler.transform(X)
       
         predictions = self.model.predict(X)
-        print("lflfkff")
+      
         predictions_conso = predictions[:, 0].round(2)
         predictions_etiquette = predictions[:, 1].round().astype(int)
         predictions_etiquette = [self.etiquette[i] for i in predictions_etiquette]

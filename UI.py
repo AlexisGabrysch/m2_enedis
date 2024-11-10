@@ -1,3 +1,4 @@
+
 from dash import dcc, html
 from dash.dependencies import Input, Output, State , MATCH, ALL
 # Ajouter l'importation de plotly.express
@@ -50,10 +51,10 @@ class DashApp:
                         id="tabs",value='contexte',
                         children=[
                             dcc.Tab(label='Contexte' , value='contexte', className='tab', selected_className='selected-tab'),
-                            dcc.Tab(label='Stats',value='stats', className='tab', selected_className='selected-tab'),
+                            dcc.Tab(label='Statistiques',value='stats', className='tab', selected_className='selected-tab'),
                                 
-                            dcc.Tab(label='Graph',value='graph', className='tab', selected_className='selected-tab'),
-                            dcc.Tab(label='Prediction',value='prediction', className='tab', selected_className='selected-tab')
+                            dcc.Tab(label='Visualisations',value='graph', className='tab', selected_className='selected-tab'),
+                            dcc.Tab(label='Prédictions',value='prediction', className='tab', selected_className='selected-tab')
                     
                         ]), html.Div(id='tabs-content')
                     ],
@@ -111,7 +112,7 @@ class DashApp:
                                     }
                                 ],
                             ),
-                            html.Button("Download CSV", id="download-button", n_clicks=0, className='download-button'),  # Added download button
+                            html.Button("Téléchargement CSV", id="download-button", n_clicks=0, className='download-button'),  # Added download button
                             dcc.Download(id="download-dataframe-csv")  # Added Download component
                         ], className='box')
                     
@@ -197,14 +198,16 @@ class DashApp:
                 children=[
                     html.H1("Dashboard dynamique - ENEDIS"),
                     html.P("Selectionnez les variables que vous voulez visualiser et le type de chart souhaité."),
-                    html.P("Vous pouvez ajouter plusieurs graphiques en cliquant sur le bouton 'Add Graph'."),
-                    html.P("Pour supprimer un graphique, cliquez sur le bouton remove en haut à bas du graphique."),
+                    html.P("Vous pouvez ajouter plusieurs graphiques en cliquant sur le bouton 'Ajouter le graphique'."),
+                    html.P("Pour supprimer un graphique, cliquez sur le bouton 'Suppprimer' en bas du graphique."),
                     html.I("La selection de une seule variable est favorable pour des performances optimales."),
                     html.I("On peut réaliser des graphiques de type scatter, line, bar, histogram, box et pie selon les variables choisies."),
+                    html.Div(
                     html.I("Le téléchargement des graphiques est possible uniquement en local avec la version 0.1.0.post1 de kaleido" , style={"color": "red"}),
+                    ),
                     html.Div([
                         html.Div([
-                            html.Label("Select X Variable"),
+                            html.Label("Selectionne la variable X"),
                             dcc.Dropdown(
                                 id='dropdown-x',
                                 options=[{'label': col, 'value': col} for col in self.df.columns],
@@ -212,7 +215,7 @@ class DashApp:
                             )
                         ], style={'width': '48%', 'display': 'inline-block', 'padding': '1%'}),
                         html.Div([
-                            html.Label("Select Y Variable"),
+                            html.Label("Selectionne la variable Y"),
                             dcc.Dropdown(
                                 id='dropdown-y',
                                 options=[{'label': col, 'value': col} for col in self.df.columns],
@@ -222,7 +225,7 @@ class DashApp:
                     ], style={'display': 'flex', 'justifyContent': 'space-between'}),
                     html.Div([
                         html.Div([
-                            html.Label("Select Color Variable (Optional)"),
+                            html.Label("Selectionne la variable de couleur (Optional)"),
                             dcc.Dropdown(
                                 id='dropdown-color',
                                 options=[{'label': col, 'value': col} for col in self.df.columns],
@@ -230,7 +233,7 @@ class DashApp:
                             )
                         ], style={'width': '48%', 'display': 'inline-block', 'padding': '1%'}),
                         html.Div([
-                            html.Label("Select Visualization Type"),
+                            html.Label("Selectionne le type de graphique"),
                             dcc.Dropdown(
                                 id='dropdown-chart-type',
                                 options=[
@@ -246,7 +249,7 @@ class DashApp:
                             )
                         ], style={'width': '48%', 'display': 'inline-block', 'padding': '1%'}),
                     ], style={'display': 'flex', 'justifyContent': 'space-between'}),
-                    html.Button("Add Graph", id="add-graph-button", n_clicks=0, style={'margin-top': '20px', 'display': 'block', 'margin-left': 'auto', 'margin-right': 'auto'}),
+                    html.Button("Ajouter le graphique", id="add-graph-button", n_clicks=0, style={'margin-top': '20px', 'display': 'block', 'margin-left': 'auto', 'margin-right': 'auto'}),
                     dcc.Store(id='graphs-store', data=[]),
 
                     html.Div(
@@ -320,8 +323,8 @@ class DashApp:
                                                 ]),
                                                 html.Ul([
                                                     html.Li("Contexte : "),
-                                                    html.Li("Stats : "),
-                                                    html.Li("Graphique : visualisation des données"),
+                                                    html.Li("Statistiques : "),
+                                                    html.Li("Visualisations : visualisation des données"),
                                                     html.Li("Prédiction de la consommation et du DPE de votre logement ")
                                                 ]),
                                             ]
@@ -379,7 +382,8 @@ class DashApp:
                                             className='contexte-section',
                                             children=[
                                                 html.H2("Contributeurs"),
-                                                html.P("Les contributeurs de ce projet sont : Alexis GABRYSCH, Lucile PERBET et Joël SOLLARI.")
+                                                html.P("Les contributeurs de ce projet sont : "),
+                                                       html.B("Alexis GABRYSCH, Lucile PERBET et Joël SOLLARI."),
                                             ]
                                         ),
                                                 
@@ -444,7 +448,7 @@ class DashApp:
         return html.Div(
             className='box',
             children=[
-                html.H3('Carte Interactive du DPE en 69', className='map-title'),  
+                html.H3('Carte interactive du DPE dans le Rhones', className='map-title'),  
                 html.P('Survolez les points pour plus d\'informations. Cliquez sur les étiquettes pour les afficher ou les masquer. Zoomez (bouton en haut à gauche) et déplacez vous sur la carte pour explorer les données.'), 
                 html.I('Les points sont échantillonnés pour des raisons de performance.' , style={"font-size": "10px"}),
                 dcc.Graph(figure=fig)
@@ -1083,8 +1087,8 @@ class DashApp:
             html.Div(
                 [
                 dcc.Graph(figure=fig_dict['figure'], id=fig_dict['id'], style={'width': '100%', 'height': '300px'}, responsive=True),
-                html.Button("Remove", id={'type': 'remove-button', 'index': fig_dict['id']}, n_clicks=0),
-                html.Button("Download", id={'type': 'download-button-graph', 'index': fig_dict['id']}, n_clicks=0),
+                html.Button("Supprimer", id={'type': 'remove-button', 'index': fig_dict['id']}, n_clicks=0),
+                html.Button("Télécharger", id={'type': 'download-button-graph', 'index': fig_dict['id']}, n_clicks=0),
                 dcc.Download(id={'type': 'download-dataframe-png-graph', 'index': fig_dict['id']})
                 ], style={
                 'display': 'flex',
@@ -1166,6 +1170,3 @@ class DashApp:
     def run(self):
         port = int(os.environ.get('PORT', 8050))
         self.app.run_server(debug=False, host='0.0.0.0', port=port)
-
-
-
