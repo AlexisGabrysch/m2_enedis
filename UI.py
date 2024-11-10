@@ -17,16 +17,17 @@ import json
 
 
 class DashApp:
-    def __init__(self, df):
+    def __init__(self):
         # Initialiser l'application Dash
         self.app = dash.Dash(__name__, external_stylesheets=['https://codepen.io/chriddyp/pen/bWLwgP.css'])
         self.app.title = 'ENEDIS'
         self.server = self.app.server
         
         self.model = Model()
-        self.df = df
+        self.df = API().get_data()
         self.fig = None  
         self.fig_dict = {}
+        self.new_data = None
         self.setup_layout()
         self.setup_callbacks()
         self.convert_coordinates()
@@ -196,12 +197,13 @@ class DashApp:
         return html.Div(
                 className='box',
                 children=[
-                    html.H1("Dynamic Graph Dashboard - ENEDIS"),
+                    html.H1("Dashboard dynamique - ENEDIS"),
                     html.P("Selectionnez les variables que vous voulez visualiser et le type de chart souhaité."),
                     html.P("Vous pouvez ajouter plusieurs graphiques en cliquant sur le bouton 'Add Graph'."),
                     html.P("Pour supprimer un graphique, cliquez sur le bouton remove en haut à bas du graphique."),
                     html.I("La selection de une seule variable est favorable pour des performances optimales."),
                     html.I("On peut réaliser des graphiques de type scatter, line, bar, histogram, box et pie selon les variables choisies."),
+                    html.I("Le téléchargement des graphiques est possible uniquement en local avec la version 0.1.0.post1 de kaleido" , style={"color": "red"}),
                     html.Div([
                         html.Div([
                             html.Label("Select X Variable"),
@@ -290,7 +292,7 @@ class DashApp:
                                         html.Div(
                                             className='contexte-section',
                                             children=[
-                                                html.H1(
+                                                html.H2(
                                                     "Analyse de la consommation énergétique et des étiquettes DPE dans le Rhône",
                                                     style={'textAlign': 'center'}
                                                 ),
@@ -345,13 +347,7 @@ class DashApp:
                                                 ),
                                             ]
                                         ),
-                                        html.Div(
-                                            className='contexte-section',
-                                            children=[
-                                                html.H2("Contributeurs"),
-                                                html.P("Les contributeurs de ce projet sont : Alexis GABRYSCH, Lucile PERBET et Joël SOLLARI.")
-                                            ]
-                                        ),
+                                        
                                         html.Div(
                                             className='box',
                                             children=[
@@ -365,10 +361,10 @@ class DashApp:
                                                         type="default",
                                                         children=html.Div(id='refresh-status')
                                                     )
-                                                ]),
+                                                ])]),
                                                 # Nouveau compartiment pour réentraîner les données
-                                                html.Div(
-                                                    className='retrain-section',
+                                        html.Div(
+                                                    className='box',
                                                     children=[
                                                         html.H2("Réentrainement des données"),
                                                         html.P("Cliquez sur le bouton ci-dessous pour réentraîner le modèle avec les dernières données."),
@@ -378,21 +374,27 @@ class DashApp:
                                                             type="default",
                                                             children=html.Div(id='retrain-status')
                                                         )
-                                                    ],
-                                                    style={
-                                                        'margin-top': '20px',
-                                                        'padding': '10px',
-                                                        'border': '1px solid #ccc',
-                                                        'borderRadius': '5px'
-                                                    }
-                                                )
+                                                        
+                                                    ]
+                                                    
+                                                ),html.Div(
+                                            className='contexte-section',
+                                            children=[
+                                                html.H2("Contributeurs"),
+                                                html.P("Les contributeurs de ce projet sont : Alexis GABRYSCH, Lucile PERBET et Joël SOLLARI.")
                                             ]
+                                        ),
+                                                
+                                    ]   
                                         )
+                                    
                                     ]
+                                
 
                                 )
-                                ]) 
-
+                            
+                        
+                        
     
     def render_cartographie(self):
     
@@ -836,7 +838,7 @@ class DashApp:
 
                     # Fetch and save data
                     api = API()
-                    df = api.refresher()
+                    df, self.new_data = api.refresher()
                     if df is not None:
                         self.df = df
                     
@@ -1131,9 +1133,13 @@ class DashApp:
                     # Disable the button during processing
                     disabled = True
                     status_message = 'En cours de traitement...'
-
+                    if self.new_data is None:
+                        status_message = 'Erreur : aucune nouvelle donnée à traiter'
+                        button_label = 'Réentraîner'
+                        disabled = False
+                        return status_message, button_label, disabled
                     # Réentrainement du modèle
-                    self.model.train()
+                    self.model.fine_tuning(self.new_data)
                     
                     # Update status and button label after processing
                     status_message = 'Modèle réentrainé'
@@ -1153,5 +1159,6 @@ class DashApp:
     def run(self):
         port = int(os.environ.get('PORT', 8050))
         self.app.run_server(debug=False, host='0.0.0.0', port=port)
+
 
 
