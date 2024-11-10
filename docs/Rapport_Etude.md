@@ -27,8 +27,7 @@ Les colonnes que nous avons retenu ont été choisies sur plusieurs critères:
 
 - Le second est que nous avons obervé d'autres simulateurs de DPE ce qui nous a permis d'avoir un aperçu de ce qui était important. 
 
-Les variables qui ont été utiles pour la prédiction sont : 
-Nos variables finales pour prédire l'étiquette DPE et la consommation énergétique sont 
+Nos variables finales pour prédire l'étiquette DPE et la consommation énergétique sont :
 - Type_bâtiment
 - Période_construction
 - Surface_habitable_logement
@@ -52,13 +51,13 @@ Pour optimiser nos modèles, certaines variables ont été recodées pour en cr�
 - Qualité_isolation_plancher_haut_comble_aménagé
 - Qualité_isolation_plancher_haut_comble_perdu
 
-Il en va de même pour la climatisation qui été recodée. Si une valeur est présente dans Type_énergie_climatisation alors la variable prend 1 sinon 0.
+Il en va de même pour la climatisation qui été recodée. Si une valeur est présente dans Type_énergie_climatisation alors la variable prend True sinon False.
 
 ## 2.2 Doublons
 <div style="text-align: justify;">Sur notre jeu de données d'entrainement obtenu avec l'API, certaines lignes étaient en double. En conséquence, les doublons ont été supprimés</div>
 
 ## 2.3 Valeurs manquantes
-<div style="text-align: justify;">Sur le jeu de données beaucoup des valeurs sont manquantes. Au vu de la grande quantité de lignes que nous avons, nous supprimons toutes les lignes possédant des vides.</div>
+<div style="text-align: justify;">Sur le jeu de données beaucoup des valeurs sont manquantes. Au vu de la grande quantité de lignes que nous avons, nous supprimons toutes les lignes possédant des vides aprés post processing de ces dernières.</div>
 
 ## 2.4 Variables catégorielles
 <div style="text-align: justify;">
@@ -89,7 +88,7 @@ E = 5 |
 F = 6 |
 G = 7 </p>
 
-Le premier modèle de multioutput que nous avons mis en place est celui de XGBoost.
+Le premier modèle à plusieurs Output que nous avons mis en place est celui de XGBoost.
 
 ## 3.3 XGBoost 
 Le XGBoost nous a permis d'entraîner un modèle sur la prédiction. L'accuracy était de 0.47 pour les étiquettes DPE et pour la consommation le R² était de 0.72 La prédiction n'est pas optimale surtout pour le DPE. A l'inverse pour le R², cela signifie que 72% de la consommation est expliquée par nos variables en entrée.

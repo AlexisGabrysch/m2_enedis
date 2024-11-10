@@ -5,19 +5,19 @@ Cette documentation a pour but d'expliquer les différents composants de l'appli
 
 # Table des matières
 1. [Contexte](#1-contexte)
-2. [Stats](#2-stats)   
+2. [Statistiques](#2-stats)   
 2.1 [Aperçu des données](#21-aperçu-des-données)
 2.2 [KPI](#22-kpi)
-3. [Graphs](#3-graphs)
+3. [Visualisations](#3-graphs)
 3.1 [Graphique](#31-graphique)
 3.2 [Cartographie](#32-cartographie)
-4. [Prédiction](#4-prédictions)
+4. [Prédictions](#4-prédictions)
 
 # 1. Contexte
 
 <div style="text-align: justify;">Cette première page correspond à la page d'accueil de notre application. Comme son nom l'indique, elle contextualise le projet en expliquant les objectifs de l'application ainsi que les différentes pages disponibles. Il est possible de rafraîchir les données via l'API.</div>
 
-# 2. Stats
+# 2. Statistiques
 <div style="text-align: justify;">Cet onglet se subdivise en deux pages différentes.</div>
 
 ## 2.1 Aperçu des données
@@ -28,7 +28,7 @@ Cette deuxième page présente les indicateurs de performances que nous avons d�
 
 <div style="text-align: justify;">La possibilité d'explorer les données via un volet de filtre rend l'interface dynamique pour l'utilisateur et permet une meilleure exploitation et exploration du jeu de données.</div>
 
-# 3. Graphs
+# 3. Visualisations
 
 ## 3.1. Graphique
 <div style="text-align: justify;">Cette partie permet d'obtenir différents types de visualisation en fonction des variables sélectionnées via le volet dédié. Selon le type des colonnes choisies, les graphiques proposés ne sont pas les mêmes. Il est possible d'ajouter plus d'informations en déterminant une variable spécifique pour les couleurs.</div>
