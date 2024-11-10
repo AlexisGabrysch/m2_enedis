@@ -5,10 +5,10 @@
 <img src="UML_architecture.drawio.png" alt="Description de l'image">
 
 ### Use case diagram
-[Use case diagram](/UML_sequence_predict.drawio.png)
+<img src="UML_UseCase.drawio.png" alt="Description de l'image">
 
 ### Sequence diagram for predicting energy consumption and DPE
-[Sequence diagram](/UML_UseCase.drawio.png)
+<img src="UML_sequence_predict.drawio.png" alt="Description de l'image">
 
 # Steps to Install and Run the App Locally
 
