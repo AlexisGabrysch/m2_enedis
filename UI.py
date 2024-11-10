@@ -136,8 +136,7 @@ class DashApp:
                                                 style_table={'overflowX': 'auto'},
                                                 style_cell={
                                                     'minWidth': '30px',
-                                                    'width': '50px',
-                                                    'maxWidth': '50px',
+                                                    'maxWidth': '100px',
                                                     'whiteSpace': 'nowrap',
                                                     'padding': '2px',          # Reduced padding
                                                     'fontSize': '12px',        # Decreased font size
@@ -919,25 +918,25 @@ class DashApp:
                 
                 # Handle the different chart types based on selections
                 if chart_type == 'scatter' and x_var and y_var:
-                    fig = px.scatter(df, x=x_var, y=y_var, color=color_var,
+                    fig = px.scatter(self.df, x=x_var, y=y_var, color=color_var,
                                     title=f"Scatter Plot of " + title)
                 elif chart_type == 'line' and x_var and y_var:
-                    fig = px.line(df, x=x_var, y=y_var, color=color_var,
+                    fig = px.line(self.df, x=x_var, y=y_var, color=color_var,
                                 title=f"Line Chart of " + title)
                 elif chart_type == 'bar' and x_var and y_var:
-                    fig = px.bar(df, x=x_var, y=y_var, color=color_var,
+                    fig = px.bar(self.df, x=x_var, y=y_var, color=color_var,
                                 title=f"Bar Chart of " + title)
                 elif chart_type == 'histogram' and x_var and not y_var:
-                    fig = px.histogram(df, x=x_var, color=color_var,
+                    fig = px.histogram(self.df, x=x_var, color=color_var,
                                     title=f"Histogram of " + title)
                 elif chart_type == 'box' and x_var and not y_var:
-                    fig = px.box(df, y=x_var, color=color_var,
+                    fig = px.box(self.df, y=x_var, color=color_var,
                                 title=f"Box Plot of " + title)
                 elif chart_type == 'histogram' and not x_var and y_var:
-                    fig = px.histogram(df, x=y_var, color=color_var,
+                    fig = px.histogram(self.df, x=y_var, color=color_var,
                                     title=f"Histogram of {y_var}")
                 elif chart_type == 'box' and not x_var and y_var:
-                    fig = px.box(df, y=y_var, color=color_var,
+                    fig = px.box(self.df, y=y_var, color=color_var,
                                 title=f"Box Plot of {y_var}")
 
                 # Avoid UnboundLocalError by ensuring 'fig' is always defined
@@ -1004,9 +1003,3 @@ class DashApp:
         self.app.run_server(debug=False, host='0.0.0.0', port=port)
 
 
-
-if __name__ == "__main__":
-    # Example usage
-    df = pd.read_csv('assets/enedis_69.csv')  
-    app = DashApp(df)
-    app.run()
